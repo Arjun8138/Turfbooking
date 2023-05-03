@@ -6,7 +6,7 @@ import com.basics.turfbooking.entity.Booking;
 import com.basics.turfbooking.entity.Customer;
 import com.basics.turfbooking.entity.Turf;
 import com.basics.turfbooking.exceptions.AlreadyExistException;
-import com.basics.turfbooking.exceptions.NotFoundException;
+import com.basics.turfbooking.exceptions.ResourceNotFoundException;
 import com.basics.turfbooking.repository.BookingRepository;
 import com.basics.turfbooking.repository.CustomerRepository;
 import com.basics.turfbooking.repository.TurfRepository;
@@ -16,14 +16,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAccessor;
-import java.util.ArrayList;
-import java.util.Date;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -80,11 +74,11 @@ public class BookingServiceImpl implements BookingService{
     }
 
     @Override
-    public BookingResponseDto getBookingById(Integer id) throws NotFoundException {
+    public BookingResponseDto getBookingById(Integer id) throws ResourceNotFoundException {
 
 
         Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Booking Not found with :",id));
+                .orElseThrow(() -> new ResourceNotFoundException("Booking","id",id));
 
         BookingResponseDto bookingResponseDto = new BookingResponseDto();
         bookingResponseDto.setTurfName(booking.getTurf().getName());
@@ -110,16 +104,16 @@ public class BookingServiceImpl implements BookingService{
     }
 
     @Override
-    public BookingResponseDto updateBooking(Integer id, BookingRequestDto bookingRequestDto) throws NotFoundException {
+    public BookingResponseDto updateBooking(Integer id, BookingRequestDto bookingRequestDto) throws ResourceNotFoundException {
 
         Booking booking=bookingRepository.findById(id).
-                orElseThrow(()->new NotFoundException("Booking Not found with :",id));
+                orElseThrow(()->new ResourceNotFoundException("Booking","id",id));
 
         Customer customer = customerRepository.findById(bookingRequestDto.getCustomerId())
-                        .orElseThrow(()->new NotFoundException("Customer Not found with :",id));
+                        .orElseThrow(()->new ResourceNotFoundException("Customer","id",id));
 
         Turf turf = turfRepository.findById(bookingRequestDto.getTurfId())
-                .orElseThrow(()->new NotFoundException("Turf Not found with :",id));
+                .orElseThrow(()->new ResourceNotFoundException("Turf","id",id));
 
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/YY");
@@ -141,10 +135,10 @@ public class BookingServiceImpl implements BookingService{
     }
 
     @Override
-    public String deleteBooking(Integer id) throws NotFoundException {
+    public String deleteBooking(Integer id) throws ResourceNotFoundException {
 
         Booking booking = bookingRepository.findById(id).
-                orElseThrow(()->new NotFoundException("Booking Not found with :",id));
+                orElseThrow(()->new ResourceNotFoundException("Booking","id",id));
         bookingRepository.delete(booking);
         return "Booking Deleted successfully";
     }

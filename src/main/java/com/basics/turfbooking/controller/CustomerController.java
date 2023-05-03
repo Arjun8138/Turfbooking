@@ -2,7 +2,7 @@ package com.basics.turfbooking.controller;
 
 import com.basics.turfbooking.dto.CustomerRequestDto;
 import com.basics.turfbooking.dto.CustomerResponseDto;
-import com.basics.turfbooking.exceptions.NotFoundException;
+import com.basics.turfbooking.exceptions.ResourceNotFoundException;
 import com.basics.turfbooking.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -29,18 +29,23 @@ public class CustomerController {
     }
 
     @GetMapping("/getCustomerById/{id}")
-    public CustomerResponseDto getCustomer(@PathVariable Integer id) throws NotFoundException {
+    public CustomerResponseDto getCustomer(@PathVariable Integer id) throws ResourceNotFoundException {
         return customerService.getCustomerById(id);
 
     }
 
+    @GetMapping("/getCustomerByName/{name}")
+    public List<CustomerResponseDto> customersByName(@PathVariable String name){
+        return customerService.getCustomersByName(name);
+    }
+
     @PutMapping("/updateCustomerById/{id}")
-    public CustomerResponseDto updateCustomer(@PathVariable Integer id,@RequestBody CustomerRequestDto customerRequestDto) throws NotFoundException {
+    public CustomerResponseDto updateCustomer(@PathVariable Integer id,@RequestBody CustomerRequestDto customerRequestDto) throws ResourceNotFoundException {
         return customerService.updateCustomer(customerRequestDto,id);
     }
 
     @DeleteMapping("/deleteCustomerById/{id}")
-    public String deleteCustomer(@PathVariable Integer id) throws NotFoundException {
+    public String deleteCustomer(@PathVariable Integer id) throws ResourceNotFoundException {
         return customerService.deleteBooking(id);
     }
 }

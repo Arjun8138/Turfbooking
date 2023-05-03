@@ -3,7 +3,7 @@ package com.basics.turfbooking.service;
 import com.basics.turfbooking.dto.CustomerRequestDto;
 import com.basics.turfbooking.dto.CustomerResponseDto;
 import com.basics.turfbooking.entity.Customer;
-import com.basics.turfbooking.exceptions.NotFoundException;
+import com.basics.turfbooking.exceptions.ResourceNotFoundException;
 import com.basics.turfbooking.repository.CustomerRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -56,10 +55,10 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerResponseDto getCustomerById(Integer id) throws NotFoundException {
+    public CustomerResponseDto getCustomerById(Integer id) throws ResourceNotFoundException {
 
         Customer customer=customerRepository.findById(id).
-                orElseThrow(()->new NotFoundException("Customer Not found with :",id));
+                orElseThrow(()->new ResourceNotFoundException("Customer","id",id));
         CustomerResponseDto customerResponseDto = new CustomerResponseDto();
         customerResponseDto.setName(customer.getName());
         customerResponseDto.setAddress(customer.getAddress());
@@ -68,10 +67,10 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerResponseDto updateCustomer(CustomerRequestDto customerRequestDto,Integer id) throws NotFoundException {
+    public CustomerResponseDto updateCustomer(CustomerRequestDto customerRequestDto,Integer id) throws ResourceNotFoundException {
 
         Customer customer = customerRepository.findById(id).
-                orElseThrow(()->new NotFoundException("Customer Not found with :",id));
+                orElseThrow(()->new ResourceNotFoundException("Customer","id",id));
         customer.setName(customerRequestDto.getName());
         customer.setAddress(customerRequestDto.getAddress());
         customer.setMailId(customerRequestDto.getMailId());
@@ -87,12 +86,23 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public String deleteBooking(Integer id) throws NotFoundException {
+    public String deleteBooking(Integer id) throws ResourceNotFoundException {
 
         Customer customer = customerRepository.findById(id).
-                orElseThrow(()->new NotFoundException("Customer Not found with :",id));
+                orElseThrow(()->new ResourceNotFoundException("Customer","id",id));
         customerRepository.delete(customer);
         return "Customer deleted Successfully";
     }
+
+    @Override
+    public List<CustomerResponseDto> getCustomersByName(String name)  {
+
+        List<Customer> customersByName = customerRepository.findCustomerByName(name);
+        List<CustomerResponseDto> customerResponseDtoList = customersByName.stream().
+                map(customer -> modelMapper.map(customer,CustomerResponseDto.class)).collect(Collectors.toList());
+        return customerResponseDtoList;
+
+    }
+
 
 }

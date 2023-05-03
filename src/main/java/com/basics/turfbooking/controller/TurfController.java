@@ -2,9 +2,8 @@ package com.basics.turfbooking.controller;
 
 import com.basics.turfbooking.dto.TurfRequestDto;
 import com.basics.turfbooking.dto.TurfResponseDto;
-import com.basics.turfbooking.exceptions.NotFoundException;
+import com.basics.turfbooking.exceptions.ResourceNotFoundException;
 import com.basics.turfbooking.service.TurfService;
-import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,17 +27,21 @@ public class TurfController {
     }
 
     @GetMapping("/getTurfById/{id}")
-    public TurfResponseDto getTurfById(@PathVariable Integer id) throws NotFoundException {
-
+    public TurfResponseDto getTurfById(@PathVariable Integer id) throws ResourceNotFoundException {
         return turfService.getTurfById(id);
     }
+
+    @GetMapping("/getTurfByLocation/{location}")
+    public List<TurfResponseDto> getTurfByLocation(@PathVariable String location){
+        return turfService.getTurfByLocation(location);
+    }
     @PutMapping("/updateTurfById/{id}")
-    public TurfResponseDto updateTurfById(@PathVariable Integer id,@RequestBody TurfRequestDto turfRequestDto)throws NotFoundException{
+    public TurfResponseDto updateTurfById(@PathVariable Integer id,@RequestBody TurfRequestDto turfRequestDto)throws ResourceNotFoundException{
         return turfService.updateTurf(turfRequestDto, id);
     }
 
     @DeleteMapping("/deleteMapping/{id}")
-    public String deleteTurfById(@PathVariable Integer id)throws NotFoundException{
+    public String deleteTurfById(@PathVariable Integer id)throws ResourceNotFoundException{
         return turfService.deleteTurf(id);
     }
 

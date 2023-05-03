@@ -3,7 +3,7 @@ package com.basics.turfbooking.controller;
 import com.basics.turfbooking.dto.BookingRequestDto;
 import com.basics.turfbooking.dto.BookingResponseDto;
 import com.basics.turfbooking.exceptions.AlreadyExistException;
-import com.basics.turfbooking.exceptions.NotFoundException;
+import com.basics.turfbooking.exceptions.ResourceNotFoundException;
 import com.basics.turfbooking.service.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +23,7 @@ public class BookingController {
         return bookingService.saveBooking(bookingRequestDto);
     }
     @GetMapping("/getBookingById/{id}")
-    public BookingResponseDto bookingResponseDto(@PathVariable Integer id) throws NotFoundException {
+    public BookingResponseDto bookingResponseDto(@PathVariable Integer id) throws ResourceNotFoundException {
         return bookingService.getBookingById(id);
     }
 
@@ -34,8 +34,13 @@ public class BookingController {
     }
 
     @PutMapping("/updateBooking/{id}")
-    public BookingResponseDto bookingResponseDto(@PathVariable Integer id,@RequestBody BookingRequestDto bookingRequestDto) throws ParseException, NotFoundException {
+    public BookingResponseDto bookingResponseDto(@PathVariable Integer id,@RequestBody BookingRequestDto bookingRequestDto) throws ParseException, ResourceNotFoundException {
         return bookingService.updateBooking(id,bookingRequestDto);
+    }
+
+    @DeleteMapping("/deleteBooking/{id}")
+    public String deleteBooking(@PathVariable Integer id) throws ResourceNotFoundException {
+        return bookingService.deleteBooking(id);
     }
 
 }

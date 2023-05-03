@@ -3,7 +3,7 @@ package com.basics.turfbooking.service;
 import com.basics.turfbooking.dto.TurfRequestDto;
 import com.basics.turfbooking.dto.TurfResponseDto;
 import com.basics.turfbooking.entity.Turf;
-import com.basics.turfbooking.exceptions.NotFoundException;
+import com.basics.turfbooking.exceptions.ResourceNotFoundException;
 import com.basics.turfbooking.repository.TurfRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,10 +59,10 @@ public class TurfServiceImpl implements TurfService{
     }
 
     @Override
-    public TurfResponseDto updateTurf(TurfRequestDto turfRequestDto, Integer id) throws NotFoundException {
+    public TurfResponseDto updateTurf(TurfRequestDto turfRequestDto, Integer id) throws ResourceNotFoundException {
 
         Turf turf= turfRepository.findById(id).
-                orElseThrow(()->new NotFoundException("Turf Not found with :",id));
+                orElseThrow(()->new ResourceNotFoundException("Turf","id",id));
         turf.setName(turfRequestDto.getName());
         turf.setLocation(turfRequestDto.getLocation());
         turf.setOpeningTime(turfRequestDto.getOpeningTime());
@@ -82,11 +82,11 @@ public class TurfServiceImpl implements TurfService{
     }
 
     @Override
-    public TurfResponseDto getTurfById(Integer id) throws NotFoundException {
+    public TurfResponseDto getTurfById(Integer id) throws ResourceNotFoundException {
 
         Turf turf =
         turfRepository.findById(id)
-                .orElseThrow(()->new NotFoundException("Turf Not found with :",id));
+                .orElseThrow(()->new ResourceNotFoundException("Turf","id",id));
         TurfResponseDto turfResponseDto=new TurfResponseDto();
         turfResponseDto.setRate(turf.getRate());
         turfResponseDto.setName(turf.getName());
@@ -97,10 +97,22 @@ public class TurfServiceImpl implements TurfService{
     }
 
     @Override
-    public String deleteTurf(Integer id) throws NotFoundException {
+    public List<TurfResponseDto> getTurfByLocation(String location) {
+
+        List<Turf> turfList = turfRepository.findTurfByLocation(location);
+        List<TurfResponseDto>turfResponseDtoList=turfList.stream()
+                .map(turf -> modelMapper.map(turf,TurfResponseDto.class)).collect(Collectors.toList());
+        if (turfResponseDtoList==null){
+
+        }
+        return turfResponseDtoList;
+    }
+
+    @Override
+    public String deleteTurf(Integer id) throws ResourceNotFoundException {
 
         Turf turf = turfRepository.findById(id)
-                .orElseThrow(()->new NotFoundException("Turf Not found with :",id));
+                .orElseThrow(()->new ResourceNotFoundException("Turf","id",id));
         turfRepository.delete(turf);
         return "Turf successfully deleted";
     }
